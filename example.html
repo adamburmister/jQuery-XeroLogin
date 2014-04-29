@@ -62,21 +62,27 @@
        // or false to ignore that.
        
        new $.XeroLogin({
-          expiryTimeout: 30,
-          workingIndicator: $('.loginText'),
-          progressIndicator: $('.progressText'),
-          canceledIndicator: $('#cancelOrReopen')
+          url: '/oauth/xero', // The local URL used to generate the new token request
+          autoShow: true
         })
         .done(function() {
           // Handle successful connection
           console.log('Connect successful', arguments);
         })
-        .fail(function() {
+        .fail(function(reason) {
           // Handle failed connection
-          console.log('Connect failed', arguments);
+          switch(reason) {
+            case $.XeroLogin.CLOSED:
+              console.log('Connect failed as the window was closed');
+              break;
+            case $.XeroLogin.CANCELLED:
+              console.log('Connect as user cancel login');
+              break;
+            case $.XeroLogin.FAILED:
+              console.log('Connect as login failed');
+              break;
+          }
         });
-
-        $.XeroLogin.connect();
 
       });
     });

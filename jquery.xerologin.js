@@ -1,4 +1,5 @@
-/** jQuery Xero Login Popup 
+/** 
+jQuery Xero Login Popup 
 
 Shows Xero OAuth Authentication in a Javascript popup. Requires jQuery.
 
@@ -9,68 +10,94 @@ For examples, check out the included example.html
 
 ;(function ( $, window, document, undefined ) {
 
-  var defaults = {
-    expiryTimeout: null,
-    workingIndicator: null,
-    progressIndicator: null,
-    canceledIndicator: null
+  // Success
+  var SUCCESS = 'success';
+  // Failures
+  var CANCELLED = 'cancelled';
+  var FAILED = 'failed';
+  // Default options
+  var DEFAULTS = {
+    url: null,
+    autoShow: true, // automatically show the popup
+    popup: {
+      name: 'ConnectWithOAuth', // should not include space for IE
+      height: 400,
+      width: 800
+    }
   };
 
+  // Privates
   var _deferred = new $.Deferred();
   var _loginWindow = null;
 
   // Constructor
   // @return {jQuery.Deferred}
   function XeroLogin(options) {
-    this.options = $.extend( {}, defaults, options );
+    // Deep merge option
+    opts = $.extend(true, {}, DEFAULTS, options);
 
-    this._defaults = defaults;
-    this._name = 'XeroLogin';
-    
+    if(!opts.url) {
+      throw new Error('No oAuth URL provided to XeroLogin in options.url');
+    }
+
+    // Track it
+    $.XeroLogin.options = opts;
+
+    if(opts.autoShow) {
+      _popupLoginWindow(opts);
+    }
+
     return _deferred;
   }
 
-  // Class methods
+  // Constants to represent rejection states
+  XeroLogin.CANCELLED = CANCELLED;
+  XeroLogin.FAILED    = FAILED;
+  XeroLogin.SUCCESS   = SUCCESS;
 
-  // Start a connection attempt
-  XeroLogin.login = function() {
-    console.log("Connecting");
-    _deferred.resolve('response');
+  // Popup the login window (called automatically if options have autoShow = true)
+  XeroLogin.showLogin = function() {
+    _popupLoginWindow(this.options);
+  }
+
+  // Called from the OAuth response callback page
+  XeroLogin.success = function() {
+    _deferred.resolve(SUCCESS);
+  }
+
+  // Called from the OAuth response callback page
+  XeroLogin.failure = function() {
+    _deferred.reject(FAILED);
   }
 
   // Cancel a connection attempt
   XeroLogin.cancel = function() {
-    _deferred.reject('cancelled');
+    _deferred.reject(CANCELLED);
   }
 
   // Private methods
 
-  function _showLoginWindow() {
-    var width  = 970;
-    var height = 650;
-
-    _loginWindow = window.open(this.xero_login_url, "xero_login_popup", 
-      "left=\#{left},top=\#{top},width=\#{width},height=\#{height},location=yes,toolbar=0,status=0,menubar=0,scrollbars=0".interpolate({ 
-        left:   (document.viewport.getWidth() - width) / 2, 
-        top:    (document.viewport.getHeight() - height) / 2,
-        width:  width, 
-        height: height })
-      );
-    
-    if (_loginWindow) { // IE8 doesn't return a value for window.open...
-
-      // thanks, quirksmode :)
-if (window.focus) {_loginWindow.focus()}
-
-  this.window_poller = new PeriodicalExecuter(function(pe) {
-
-    if (_loginWindow.closed) {
-      this.show_cancelOrReopen();
-      pe.stop();
+  function _popupLoginWindow(options) {
+    // Calculate centered position for window
+    var centeredX, centeredY;
+    if ($.browser.msie) {//hacked together for IE browsers
+      centeredY = (window.screenTop - 120) + ((((document.documentElement.clientHeight + 120)/2) - (opts.popup.height/2)));
+      centeredX = window.screenLeft + ((((document.body.offsetWidth + 20)/2) - (opts.popup.width/2)));
+    }else{
+      centeredY = window.screenY + (((window.outerHeight/2) - (opts.popup.height/2)));
+      centeredX = window.screenX + (((window.outerWidth/2) - (opts.popup.width/2)));
     }
 
-  }.bind(this), 1);
+    var winOpts = 'location=0,status=0,width=' + options.popup.width + ',height=' + options.popup.height + ',top=' + centeredY + ',left=' + centeredX + '';
 
+    var oauthWindow   = window.open(options.url, options.popup.name, winOpts);
+
+    var oauthInterval = window.setInterval(function(){
+      if (oauthWindow.closed) {
+        window.clearInterval(oauthInterval);
+        XeroLogin.cancel();
+      }
+    }, 1000);
   }
 
   $.extend({
