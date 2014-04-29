@@ -9,84 +9,91 @@
   <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
   <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
   <script src="jquery.xerologin.js" type="text/javascript"></script>
-	
-	<link href="style.css" media="screen" rel="stylesheet" type="text/css" />
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
+  <link href="style.css" media="screen" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
 
-  <div id="xero_loading" class="modal" style="display: none;">
+  <div id="processingXeroLoginModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div id="info">
+            <p>
+              This div is displayed while the popup is active, and is a good place to explain what's going on, or
+              show a slick loading indicator! 
+            </p>
+          </div>
 
-    <div id="info">
-
-      <p>
-        This div is displayed while the popup is active, and is a good place to explain what's going on, or
-        show a slick loading indicator! 
-        
-        <span class="loginText">(<strong>this text is displayed when the login window is still active</strong>).</span>
-        <span class="progressText" style="display: none;">(<strong>this is for when your Xero Sync is in progress</strong>).</span>
-      </p>
-       
-      
-      <p>
-        (They can also <a href="#" onclick="XeroLogin.cancel(); return false;">cancel</a> the process)
-      </p>
-
+          <div id="cancelOrReopen" style="display: none;">
+            <p class="intro">This div is displayed if the user has closed the popup window without completing the process.</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" id="btnCancel" data-dismiss="modal" onclick="$.XeroLogin.cancel();">Cancel</button>
+          <button type="button" class="btn btn-primary" style="display:none" id="btnTryAgain" onclick="$.XeroLogin.showLogin(); return false;">Try Again</button>
+        </div>
+      </div>
     </div>
-
-    <div id="cancelOrReopen" style="display: none;">
-
-      <p class="intro">This div is displayed if the user has closed the popup window without completing the process.</p>
-
-      <p>They can <a href="#" onclick="XeroLogin.showLoginWindow(); return false;">Try Again</a> or 
-        <a href="#" onclick="XeroLogin.cancel(); return false;">Give up</a>.</p>
-
-    </div>
-
   </div>
-  
-  <div class="connectButton">
-    
-    <p>First, fill out your Xero Login URL. Then:</p>
-    
-    <button id="btnConnect">Connect to Xero</button>
-  
+
+  <div class="container">
+    <div class="row">
+      <div class="well col-md-offset-4 col-xs-4 text-center">
+        <h1>Xero OAuth</h1>
+        <button id="btnConnect">Connect to Xero</button>
+      </div>
+    </div>
   </div>
 
   <script type="text/javascript">
 
-    $(document).ready(function() {
-      $('#btnConnect').click(function() {
-
-       // for the first parameter, you can specify when the user's OAuth Token is about to expire (use a format that's parseable by )
-       // or false to ignore that.
-       
-       new $.XeroLogin({
-          url: '/oauth/xero', // The local URL used to generate the new token request
-          autoShow: true
-        })
-        .done(function() {
-          // Handle successful connection
-          console.log('Connect successful', arguments);
-        })
-        .fail(function(reason) {
-          // Handle failed connection
-          switch(reason) {
-            case $.XeroLogin.CLOSED:
-              console.log('Connect failed as the window was closed');
-              break;
-            case $.XeroLogin.CANCELLED:
-              console.log('Connect as user cancel login');
-              break;
-            case $.XeroLogin.FAILED:
-              console.log('Connect as login failed');
-              break;
-          }
-        });
-
+  $(document).ready(function() {
+    $('#btnConnect').click(function() {
+      // Show the popover
+      $('#processingXeroLoginModal').modal();
+     
+      new $.XeroLogin({
+        url: '/oauth/xero', // The local URL used to generate the new token request
+        autoShow: true
+      })
+      .done(function() {
+        // Handle successful connection
+        console.log('Connect successful', arguments);
+        $('#processingXeroLoginModal').hide();
+      })
+      .fail(function(reason) {
+        // Handle failed connection
+        switch(reason) {
+          case $.XeroLogin.CLOSED:
+            console.log('Connect failed as the window was closed');
+            $('#cancelOrReopen').show();
+            $('#btnTryAgain').show();
+            break;
+          case $.XeroLogin.CANCELLED:
+            $('#cancelOrReopen').show();
+            $('#btnTryAgain').show();
+            console.log('Connect as user cancel login');
+            break;
+          case $.XeroLogin.FAILED:
+            console.log('Connect as login failed');
+            break;
+        }
       });
+
     });
-    
+  });
+
   </script>
 
 </body>
