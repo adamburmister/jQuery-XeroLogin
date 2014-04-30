@@ -67,33 +67,32 @@
       // Show the popover
       $('#processingXeroLoginModal').modal();
      
+      // Configure XeroLogin with the auth path. This method returns a promise.
+      // Attach .done and .fail methods to listen to outcomes of the login and 
+      // do future actions.
       new $.XeroLogin({
-        url: '/oauth/xero', // The local URL used to generate the new token request
-        autoShow: true
-      })
-      .done(function() {
-        // Handle successful connection
-        console.log('Connect successful', arguments);
-        $('#processingXeroLoginModal').hide();
-      })
-      .fail(function(reason) {
-        // Handle failed connection
-        switch(reason) {
-          case $.XeroLogin.CLOSED:
-            console.log('Connect failed as the window was closed');
-            $('#cancelOrReopen').show();
-            $('#btnTryAgain').show();
-            break;
-          case $.XeroLogin.CANCELLED:
-            $('#cancelOrReopen').show();
-            $('#btnTryAgain').show();
-            console.log('Connect as user cancel login');
-            break;
-          case $.XeroLogin.FAILED:
-            console.log('Connect as login failed');
-            break;
-        }
-      });
+          url: '/oauth/xero', // The local URL used to generate the new token request
+          autoShow: true
+        })
+        .done(function(dataFromOAuthSuccessPage) {
+          // Handle successful connection
+          console.log('Connect successful');
+          $('#processingXeroLoginModal').hide();
+        })
+        .fail(function(reason) {
+          // Handle failed connection
+          switch(reason) {
+            case $.XeroLogin.CANCELLED:
+            case $.XeroLogin.CLOSED:
+              console.log('Login was cancelled by the user closing the window');
+              $('#cancelOrReopen').show();
+              $('#btnTryAgain').show();
+              break;
+            case $.XeroLogin.FAILED:
+              console.log('Login failed');
+              break;
+          }
+        });
 
     });
   });

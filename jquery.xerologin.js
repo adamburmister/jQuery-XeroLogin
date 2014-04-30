@@ -10,8 +10,6 @@ For examples, check out the included example.html
 
 ;(function ( $, window, document, undefined ) {
 
-  // Success
-  var SUCCESS = 'success';
   // Failures
   var CANCELLED = 'cancelled';
   var FAILED = 'failed';
@@ -53,7 +51,6 @@ For examples, check out the included example.html
   // Constants to represent rejection states
   XeroLogin.CANCELLED = CANCELLED;
   XeroLogin.FAILED    = FAILED;
-  XeroLogin.SUCCESS   = SUCCESS;
 
   // Popup the login window (called automatically if options have autoShow = true)
   XeroLogin.showLogin = function() {
@@ -61,8 +58,8 @@ For examples, check out the included example.html
   }
 
   // Called from the OAuth response callback page
-  XeroLogin.success = function() {
-    _deferred.resolve(SUCCESS);
+  XeroLogin.success = function(anyData) {
+    _deferred.resolve(anyData);
   }
 
   // Called from the OAuth response callback page
