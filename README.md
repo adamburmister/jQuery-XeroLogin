@@ -1,10 +1,10 @@
-= jQuery Xero Login
+# jQuery Xero Login
 
 This is some sample JS to help you along the path of creating a script to show the Authorization screen for Xero's API in a popup window.
 
 It's similar to the one in use in "MinuteDock":http://minutedock.com.
 
-== Usage
+## Usage
 
 First, set `url`. This `url` should point to a URL on your system where you generate a request token, and then redirect the user to the Request Token's authorize url.
 
