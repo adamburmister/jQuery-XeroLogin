@@ -8,7 +8,7 @@ It's similar to the one in use in "MinuteDock":http://minutedock.com.
 
 ### Creating a new OAuth request to Xero
 
-You can invoke a XeroLogin by simply instantiating the class:
+You can invoke a XeroLogin by simply setting up the singleton class, then attaching `done` and `fail` promise callbacks, listening to response parameters for more information.
 
 ```js
 new $.XeroLogin({
