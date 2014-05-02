@@ -1,0 +1,26 @@
+{
+  "name": "jQuery.XeroLogin",
+  "version": "0.0.1",
+  "homepage": "https://github.com/adamburmister/jQuery-XeroLogin",
+  "authors": [
+    "Adam Burmister <adam.burmister@gmail.com>"
+  ],
+  "description": "Add popover OAuth support for Xero.com using jQuery",
+  "main": "jquery.xerologin.js",
+  "keywords": [
+    "jquery",
+    "xero",
+    "oauth",
+    "login",
+    "xero.com",
+    "auth"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

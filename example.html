@@ -71,7 +71,7 @@
       // Attach .done and .fail methods to listen to outcomes of the login and 
       // do future actions.
       new $.XeroLogin({
-          url: '/oauth/xero', // The local URL used to generate the new token request
+          url: '/auth/xero', // The local URL used to generate the new token request
           autoShow: true
         })
         .done(function(dataFromOAuthSuccessPage) {

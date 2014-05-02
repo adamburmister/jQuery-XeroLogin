@@ -19,8 +19,8 @@ For examples, check out the included example.html
     autoShow: true, // automatically show the popup
     popup: {
       name: 'ConnectWithOAuth', // should not include space for IE
-      height: 400,
-      width: 800
+      height: 600,
+      width: 960
     }
   };
 
@@ -76,8 +76,9 @@ For examples, check out the included example.html
 
   function _popupLoginWindow(options) {
     // Calculate centered position for window
+    var isIE = navigator.userAgent.match(/msie|trident/i);
     var centeredX, centeredY;
-    if ($.browser.msie) {//hacked together for IE browsers
+    if (isIE) {//hacked together for IE browsers
       centeredY = (window.screenTop - 120) + ((((document.documentElement.clientHeight + 120)/2) - (opts.popup.height/2)));
       centeredX = window.screenLeft + ((((document.body.offsetWidth + 20)/2) - (opts.popup.width/2)));
     }else{
@@ -89,12 +90,27 @@ For examples, check out the included example.html
 
     var oauthWindow   = window.open(options.url, options.popup.name, winOpts);
 
-    var oauthInterval = window.setInterval(function(){
-      if (oauthWindow.closed) {
+    if(oauthWindow) {
+      // Use modern postmessage
+      var onmessage = function(e) {
+        var data = e.data;
         window.clearInterval(oauthInterval);
-        XeroLogin.cancel();
+        XeroLogin.success(data);
+      };
+      if (typeof window.addEventListener != 'undefined') {
+        window.addEventListener('message', onmessage, false);
+      } else if (typeof window.attachEvent != 'undefined') {
+        window.attachEvent('onmessage', onmessage);
       }
-    }, 1000);
+
+      // Use old fashioned polling to monitor closures
+      var oauthInterval = window.setInterval(function(){
+        if (oauthWindow.closed) {
+          window.clearInterval(oauthInterval);
+          XeroLogin.cancel();
+        }
+      }, 1000);
+    }
   }
 
   $.extend({

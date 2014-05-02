@@ -27,8 +27,10 @@ end
 Your Authorize Callback should then run the following Javascript:
 
 ```js
-window.opener.XeroLogin.success(anyData);
+<script>
+window.opener.$.XeroLogin.success(anyData);
 window.close();
+</script>
 ```
 
 (This will close the popup window and tell XeroLogin it's no longer needed)
@@ -36,8 +38,8 @@ window.close();
 You can invoke a XeroLogin by simply instantiating the class:
 
 ```js
-new XeroLogin({
-    url: '/oauth/xero' // The local URL used to generate the new token request
+new $.XeroLogin({
+    url: '/auth/xero' // The local URL used to generate the new token request
   })
   .done(function(anyData) {
       // Handle successful connection
