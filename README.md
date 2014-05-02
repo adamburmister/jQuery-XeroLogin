@@ -32,7 +32,7 @@ new $.XeroLogin({
   });
 ```
 
-### Your servers post-OAuth callback page
+### Your post-OAuth callback page
 
 Your Authorize Callback should then run the following Javascript:
 
