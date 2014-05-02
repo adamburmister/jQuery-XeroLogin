@@ -40,10 +40,8 @@ new $.XeroLogin({
 Your Authorize Callback should then run the following Javascript:
 
 ```js
-<script>
 window.opener.$.XeroLogin.success(anyData);
 window.close();
-</script>
 ```
 
 This will close the popup window and tell XeroLogin it's no longer needed.
