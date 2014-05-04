@@ -58,18 +58,18 @@ For examples, check out the included example.html
   }
 
   // Called from the OAuth response callback page
-  XeroLogin.success = function(anyData) {
-    _deferred.resolve(anyData);
+  XeroLogin.success = function(win, anyData) {
+    _deferred.resolve(win, anyData);
   }
 
   // Called from the OAuth response callback page
   XeroLogin.failure = function() {
-    _deferred.reject(FAILED);
+    _deferred.reject(win, FAILED);
   }
 
   // Cancel a connection attempt
   XeroLogin.cancel = function() {
-    _deferred.reject(CANCELLED);
+    _deferred.reject(win, CANCELLED);
   }
 
   // Private methods
@@ -95,7 +95,7 @@ For examples, check out the included example.html
       var onmessage = function(e) {
         var data = e.data;
         window.clearInterval(oauthInterval);
-        XeroLogin.success(data);
+        XeroLogin.success(oauthWindow, data);
       };
       if (typeof window.addEventListener != 'undefined') {
         window.addEventListener('message', onmessage, false);

@@ -74,12 +74,14 @@
           url: '/auth/xero', // The local URL used to generate the new token request
           autoShow: true
         })
-        .done(function(dataFromOAuthSuccessPage) {
+        .done(function(oauthWindow, dataFromOAuthSuccessPage) {
+          oauthWindow.close();
           // Handle successful connection
           console.log('Connect successful');
           $('#processingXeroLoginModal').hide();
         })
-        .fail(function(reason) {
+        .fail(function(oauthWindow, reason) {
+          oauthWindow.close();
           // Handle failed connection
           switch(reason) {
             case $.XeroLogin.CANCELLED:

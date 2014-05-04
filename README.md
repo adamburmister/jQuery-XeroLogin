@@ -17,21 +17,23 @@ You will be redirected to the Xero OAuth page. Once completed, the Xero server w
 new $.XeroLogin({
     url: '/auth/xero' // The local URL used to generate the new token request
   })
-  .done(function(anyData) {
-      // Handle successful connection
-      alert("Logged in successfully!");
+  .done(function(oauthWindow, anyData) {
+    oauthWindow.close();
+    // Handle successful connection
+    alert("Logged in successfully!");
   })
-  .fail(function(reason) {
-      // Handle failed connection
-      switch(reason) {
-        case $.XeroLogin.CANCELLED:
-        case $.XeroLogin.CLOSED:
-          alert("Login cancelled by user");
-          break;
-        case $.XeroLogin.FAILED:
-          alert("Login failed!");
-          break;
-      }
+  .fail(function(oauthWindow, reason) {
+    oauthWindow.close();
+    // Handle failed connection
+    switch(reason) {
+      case $.XeroLogin.CANCELLED:
+      case $.XeroLogin.CLOSED:
+        alert("Login cancelled by user");
+        break;
+      case $.XeroLogin.FAILED:
+        alert("Login failed!");
+        break;
+    }
   });
 ```
 
